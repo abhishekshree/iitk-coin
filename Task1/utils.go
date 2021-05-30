@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func add(db *sql.DB, rollno int, name string) bool {
+func add(db *sql.DB, rollno string, name string) bool {
 	status := false
 
 	checker, _ := db.Query(`SELECT * FROM User WHERE rollno=$1`, rollno)

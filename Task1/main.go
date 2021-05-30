@@ -14,19 +14,19 @@ func main() {
 	clean(db)
 
 	// Creates the table if it does not exists already.
-	statement, _ := db.Prepare("CREATE TABLE IF NOT EXISTS User (rollno INTEGER PRIMARY KEY, name TEXT)")
+	statement, _ := db.Prepare("CREATE TABLE IF NOT EXISTS User (rollno TEXT PRIMARY KEY, name TEXT)")
 	statement.Exec()
 	fmt.Println("Table 'User' is Ready!")
 
 	// Adding some elements
 	usrs := []struct {
-		rollno int
+		rollno string
 		name   string
 	}{
-		{200028, "Abhishek Shree"},
-		{200029, "Someone"},
-		{200030, "Someone Else"},
-		{180199, "Bhuvan Singla"},
+		{"200028", "Abhishek Shree"},
+		{"200029", "Someone"},
+		{"200030", "Someone Else"},
+		{"180199", "Bhuvan Singla"},
 	}
 
 	for _, usr := range usrs {
