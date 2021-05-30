@@ -13,6 +13,6 @@ Note: [Nice reason for that underscore](https://stackoverflow.com/questions/2122
 
 <u>Functions implemented</u>:
 
-1. ```func add(db *sql.DB, rollno int, name string) bool``` : Adds a user to the table.
+1. ```func add(db *sql.DB, rollno string, name string) bool``` : Adds a user to the table.
 
 2. ```func clean(db *sql.DB) bool```: Drops the table for a fresh run.
