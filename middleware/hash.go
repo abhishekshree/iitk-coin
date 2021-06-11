@@ -1,4 +1,4 @@
-package main
+package middleware
 
 import (
 	"log"
@@ -8,7 +8,7 @@ import (
 
 // Encryption
 
-func hashAndSalt(password string) string {
+func HashAndSalt(password string) string {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Println(err)
@@ -23,5 +23,3 @@ func ComparePasswords(hashedPwd string, plainPwd string) bool {
 
 	return err == nil
 }
-
-// JWT

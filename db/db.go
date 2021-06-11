@@ -1,30 +1,33 @@
-package main
+package db
 
 import (
+	"database/sql"
 	"fmt"
 )
 
 type User struct {
-	rollno   string
-	name     string
-	password string
+	Rollno   string
+	Name     string
+	Password string
 }
 
-func add(user User) bool {
+var DB *sql.DB
+
+func Add(user User) bool {
 	status := false
 
-	checker, _ := DB.Query(`SELECT * FROM User WHERE rollno=$1`, user.rollno)
+	checker, _ := DB.Query(`SELECT * FROM User WHERE rollno=$1`, user.Rollno)
 
 	if checker.Next() {
-		fmt.Printf("%v with roll number %v already EXISTS.\n", user.name, user.rollno)
+		fmt.Printf("%v with roll number %v already EXISTS.\n", user.Name, user.Rollno)
 		return status
 	}
 
 	statement, err := DB.Prepare("INSERT INTO User (rollno, name, password) VALUES (?, ?, ?)")
 
 	if err == nil {
-		statement.Exec(user.rollno, user.name, user.password)
-		fmt.Printf("Added %v with roll number %v.\n", user.name, user.rollno)
+		statement.Exec(user.Rollno, user.Name, user.Password)
+		fmt.Printf("Added %v with roll number %v.\n", user.Name, user.Rollno)
 		status = true
 	} else {
 		panic(err)
@@ -33,15 +36,15 @@ func add(user User) bool {
 	return status
 }
 
-func findPass(rollno string) (string, bool) {
+func FindPass(rollno string) (string, bool) {
 	row, _ := DB.Query(`SELECT * FROM User WHERE rollno=$1`, rollno)
 	user := User{}
 	if row.Next() {
-		err := row.Scan(&user.rollno, &user.name, &user.password)
+		err := row.Scan(&user.Rollno, &user.Name, &user.Password)
 		if err != nil {
 			return "User does not exists", false
 		}
-		return user.password, true
+		return user.Password, true
 	}
 	return "", false
 }
@@ -51,7 +54,7 @@ func UserExists(rollno string) bool {
 	return checker.Next()
 }
 
-func clean() bool {
+func Clean() bool {
 	stmt, err := DB.Prepare("DROP TABLE IF EXISTS User")
 	if err == nil {
 		stmt.Exec()

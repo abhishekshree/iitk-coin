@@ -1,8 +1,10 @@
-package main
+package routes
 
 import (
 	"time"
 
+	"github.com/abhishekshree/iitk-coin/db"
+	util "github.com/abhishekshree/iitk-coin/middleware"
 	jwt "github.com/form3tech-oss/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )
@@ -28,12 +30,12 @@ func Signup(c *fiber.Ctx) error {
 		return err
 	}
 
-	user := User{
-		p.Rollno,
-		p.Username,
-		hashAndSalt(p.Password),
+	user := db.User{
+		Rollno:   p.Rollno,
+		Name:     p.Username,
+		Password: util.HashAndSalt(p.Password),
 	}
-	status := add(user)
+	status := db.Add(user)
 
 	return c.Status(fiber.StatusOK).JSON(
 		fiber.Map{
@@ -48,10 +50,10 @@ func Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	pass, status := findPass(p.Rollno)
+	pass, status := db.FindPass(p.Rollno)
 	var res bool = false
 	if status {
-		res = ComparePasswords(pass, p.Password)
+		res = util.ComparePasswords(pass, p.Password)
 		if res {
 
 			// Create token
@@ -82,7 +84,7 @@ func Secret(c *fiber.Ctx) error {
 
 	// log.Println("The roll is ", roll)
 
-	if loggedin && UserExists(roll) {
+	if loggedin && db.UserExists(roll) {
 		return c.SendString("This is a very secret string.")
 	}
 	return c.SendString("Bad Token, user does not exist.")
