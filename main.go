@@ -17,9 +17,10 @@ import (
 func main() {
 	DB, _ := sql.Open("sqlite3", "./Users.db")
 	db.DB = DB
-	db.Clean()
+	defer DB.Close()
+	// db.Clean()
 	// Creates the table if it does not exists already.
-	statement, _ := DB.Prepare("CREATE TABLE IF NOT EXISTS User (rollno TEXT PRIMARY KEY, name TEXT, password TEXT)")
+	statement, _ := DB.Prepare("CREATE TABLE IF NOT EXISTS User (rollno TEXT PRIMARY KEY, name TEXT, password TEXT, coins INTEGER)")
 	statement.Exec()
 	fmt.Println("Table 'User' is Ready!")
 
@@ -31,6 +32,10 @@ func main() {
 	app.Get("/", routes.Hello)
 	app.Post("/signup", routes.Signup)
 	app.Post("/login", routes.Login)
+
+	app.Get("/getCoins", routes.GetCoins)
+	app.Post("/awardCoins", routes.AwardCoins)
+	app.Post("/transferCoins", routes.TransferCoins)
 
 	// JWT Middleware
 	app.Use(jwtware.New(jwtware.Config{

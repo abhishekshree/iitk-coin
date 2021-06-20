@@ -70,10 +70,10 @@ func Login(c *fiber.Ctx) error {
 				return c.SendStatus(fiber.StatusInternalServerError)
 			}
 
-			return c.JSON(fiber.Map{"token": t, "status": res})
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{"token": t, "status": res})
 		}
 	}
-	return c.JSON(fiber.Map{"status": res})
+	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": res})
 }
 
 func Secret(c *fiber.Ctx) error {
@@ -85,7 +85,7 @@ func Secret(c *fiber.Ctx) error {
 	// log.Println("The roll is ", roll)
 
 	if loggedin && db.UserExists(roll) {
-		return c.SendString("This is a very secret string.")
+		return c.Status(fiber.StatusOK).SendString("This is a very secret string.")
 	}
-	return c.SendString("Bad Token, user does not exist.")
+	return c.Status(fiber.StatusUnauthorized).SendString("Bad Token, user does not exist.")
 }
