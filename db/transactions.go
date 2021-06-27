@@ -4,21 +4,16 @@ import (
 	"log"
 )
 
-func CoinCount(rollno string) int {
-	row, _ := DB.Query(`SELECT * FROM User WHERE rollno=$1`, rollno)
-	defer row.Close()
-	user := User{}
-	if row.Next() {
-		err := row.Scan(&user.Rollno, &user.Name, &user.Password, &user.Coins)
-		if err != nil {
-			return -1
-		}
-		return user.Coins
+func CoinCount(rollno string) float64 {
+	var coin float64
+	err := DB.QueryRow(`SELECT coins FROM User WHERE rollno=$1`, rollno).Scan(&coin)
+	if err != nil {
+		return -1
 	}
-	return -1
+	return coin
 }
 
-func AddCoins(rollno string, amt int) bool {
+func AddCoins(rollno string, amt float64) bool {
 	if UserExists(rollno) {
 		tx, err := DB.Begin()
 		if err != nil {
@@ -42,7 +37,7 @@ func AddCoins(rollno string, amt int) bool {
 	return false
 }
 
-func TransferCoins(from string, to string, amt int) bool {
+func TransferCoins(from string, to string, amt float64) bool {
 	if UserExists(from) && UserExists(to) {
 		tx, err := DB.Begin()
 		if err != nil {

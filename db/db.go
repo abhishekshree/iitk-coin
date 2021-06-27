@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/abhishekshree/iitk-coin/config"
 )
@@ -40,17 +41,12 @@ func Add(user User) bool {
 }
 
 func FindPass(rollno string) (string, bool) {
-	row, _ := DB.Query(`SELECT * FROM User WHERE rollno=$1`, rollno)
-	defer row.Close()
-	user := User{}
-	if row.Next() {
-		err := row.Scan(&user.Rollno, &user.Name, &user.Password, &user.Coins)
-		if err != nil {
-			return "User does not exists", false
-		}
-		return user.Password, true
+	var pass string
+	err := DB.QueryRow(`SELECT password FROM User WHERE rollno=$1`, rollno).Scan(&pass)
+	if err != nil {
+		return "User does not exists", false
 	}
-	return "", false
+	return pass, true
 }
 
 func UserExists(rollno string) bool {
@@ -60,10 +56,11 @@ func UserExists(rollno string) bool {
 }
 
 func Clean() bool {
-	stmt, err := DB.Prepare("DROP TABLE IF EXISTS User")
-	if err == nil {
-		stmt.Exec()
-		return true
+	stmt, _ := DB.Prepare("DROP TABLE IF EXISTS Transactions")
+	_, err := stmt.Exec()
+	if err != nil {
+		log.Println(err)
+		return false
 	}
-	return false
+	return true
 }

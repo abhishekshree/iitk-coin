@@ -51,6 +51,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	pass, status := db.FindPass(p.Rollno)
+
 	var res bool = false
 	if status {
 		res = util.ComparePasswords(pass, p.Password)
