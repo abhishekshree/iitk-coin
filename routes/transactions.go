@@ -54,6 +54,15 @@ func AwardCoins(c *fiber.Ctx) error {
 			},
 		)
 	}
+
+	if user.Amt < 0 {
+		return c.Status(fiber.StatusFailedDependency).JSON(
+			fiber.Map{
+				"message": "Amount cannot be a negative value.",
+			},
+		)
+	}
+
 	if isOverflow(db.CoinCount(user.Roll), user.Amt) {
 		return c.Status(fiber.StatusFailedDependency).JSON(
 			fiber.Map{
@@ -106,7 +115,13 @@ func TransferCoins(c *fiber.Ctx) error {
 		)
 	}
 	var coinsToTransfer float64
-
+	if body.Amt < 0 {
+		return c.Status(fiber.StatusFailedDependency).JSON(
+			fiber.Map{
+				"message": "Amount cannot be a negative value.",
+			},
+		)
+	}
 	if body.From[0:2] == body.To[0:2] {
 		coinsToTransfer = body.Amt - (config.TAX_PERCENT_INTRABATCH*body.Amt)/100
 	} else {
