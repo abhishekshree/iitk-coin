@@ -33,6 +33,10 @@ func GetCoins(c *fiber.Ctx) error {
 	)
 }
 
+func isOverflow(coins float64, amount float64) bool {
+	return coins+amount > config.MAX_BALANCE
+}
+
 func AwardCoins(c *fiber.Ctx) error {
 	user := struct {
 		Roll string  `json:"rollno"`
@@ -50,7 +54,13 @@ func AwardCoins(c *fiber.Ctx) error {
 			},
 		)
 	}
-
+	if isOverflow(db.CoinCount(user.Roll), user.Amt) {
+		return c.Status(fiber.StatusFailedDependency).JSON(
+			fiber.Map{
+				"message": "Cannot award coins, balance overflows.",
+			},
+		)
+	}
 	res := db.AddCoins(user.Roll, user.Amt)
 
 	if !res {
@@ -101,6 +111,22 @@ func TransferCoins(c *fiber.Ctx) error {
 		coinsToTransfer = body.Amt - (config.TAX_PERCENT_INTRABATCH*body.Amt)/100
 	} else {
 		coinsToTransfer = body.Amt - (config.TAX_PERCENT_INTERBATCH*body.Amt)/100
+	}
+
+	if db.CoinCount(body.From) < body.Amt {
+		return c.Status(fiber.StatusFailedDependency).JSON(
+			fiber.Map{
+				"message": "Failed to transfer coins, insufficient balance.",
+			},
+		)
+	}
+
+	if isOverflow(db.CoinCount(body.To), body.Amt) {
+		return c.Status(fiber.StatusFailedDependency).JSON(
+			fiber.Map{
+				"message": "Cannot transfer coins, balance overflows.",
+			},
+		)
 	}
 
 	res := db.TransferCoins(body.From, body.To, coinsToTransfer)
