@@ -63,6 +63,7 @@ func main() {
 	app.Get("/secretpage", routes.Secret)
 	app.Post("/awardCoins", routes.AwardCoins)
 	app.Post("/transferCoins", routes.TransferCoins)
+	// Redeem part which needs a JWT Token.
 	app.Post("/redeemRequest", routes.RequestItem)
 	app.Post("/rejectRedeemRequest", routes.RejectRedeemRequest)
 	app.Post("/acceptRedeemRequest", routes.AcceptRedeemRequest)
