@@ -32,6 +32,16 @@ func main() {
 	}
 	log.Println("Table 'Transactions' is Ready!")
 
+	//Creates the table RedeemRequests if it does not exists already.
+	_, err = DB.Exec("CREATE TABLE IF NOT EXISTS RedeemRequests (id INTEGER PRIMARY KEY, rollno TEXT, item TEXT, timestamp TEXT, status INTEGER DEFAULT 0)")
+	// status 0 -> Pending
+	// status 1 -> Redeemed
+	// status 2 -> Declined
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Table 'RedeemRequests' is Ready!")
 	// App setup
 	app := fiber.New()
 	app.Use(logger.New())
@@ -42,16 +52,21 @@ func main() {
 	app.Post("/login", routes.Login)
 
 	app.Get("/getCoins", routes.GetCoins)
+	app.Get("/getRedeemList", routes.GetRedeemList)
 
 	// JWT Middleware
 	app.Use(jwtware.New(jwtware.Config{
 		SigningKey: []byte("secret"),
 	}))
 
-	// This will need a JWT bearer token.
+	// These will need a JWT bearer token.
 	app.Get("/secretpage", routes.Secret)
 	app.Post("/awardCoins", routes.AwardCoins)
 	app.Post("/transferCoins", routes.TransferCoins)
+	app.Post("/redeemRequest", routes.RequestItem)
+	app.Post("/rejectRedeemRequest", routes.RejectRedeemRequest)
+	app.Post("/acceptRedeemRequest", routes.AcceptRedeemRequest)
+	app.Post("/rejectPendingRequests", routes.RejectPendingRequests)
 
 	log.Fatal(app.Listen(":3000"))
 }
