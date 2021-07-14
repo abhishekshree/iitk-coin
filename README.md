@@ -31,6 +31,20 @@ CREATE TABLE Transactions (
 );
 ```
 
+- RedeemRequests
+
+```sql
+CREATE TABLE RedeemRequests (
+    id INTEGER PRIMARY KEY,
+    rollno TEXT,
+    item TEXT,
+    timestamp TEXT,
+    status INTEGER DEFAULT 0
+);
+
+-- for status: 0 -> Pending, 1 -> Redeemed, 2 -> Declined
+```
+
 ## Details of the endpoints:
 
 ### Signup
@@ -143,4 +157,92 @@ func MakeAdmin(rollno string) bool
 func RemoveAdmin(rollno string) bool
 func IsAdmin(rollno string) bool
 
+```
+
+## Redeem Logic
+
+### Get a list of Redeemable items and price
+
+```
+url : /getRedeemList
+method : GET
+
+Request Body: <None>
+
+Response : <Redeemable items>
+```
+
+### Create a Redeem Request
+
+
+```
+url : /redeemRequest
+
+method : POST
+
+Request Body: {
+    "item": "B"
+}
+
+Response : {
+    "message": <Message>
+}
+
+Note: The Roll number is obtained from active JWT
+```
+
+### Accept a Redeem Request
+
+
+```
+url : /acceptRedeemRequest
+
+method : POST
+
+Request Body: {
+    "id":6
+}
+
+Response : {
+    "message": <Message>
+}
+
+Note: This route is ADMIN ONLY.
+```
+
+### Reject a Redeem Request
+
+
+```
+url : /rejectRedeemRequest
+
+method : POST
+
+Request Body: {
+    "id":6
+}
+
+Response : {
+    "message": <Message>
+}
+
+Note: This route is ADMIN ONLY. Also, a request which was accepted earlier can be rejected too, in that case the coins are lost (like in other coin based systems).
+```
+
+### Reject all the pending requests from a user (in case someone spams a lot of requests)
+
+```
+url : /rejectPendingRequests
+
+method : POST
+
+Request Body: {
+    "roll":"190028"
+}
+
+Response : {
+    "message": <Message>
+}
+
+Note: This route is ADMIN ONLY.
 ```
