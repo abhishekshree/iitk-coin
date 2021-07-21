@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	"github.com/abhishekshree/iitk-coin/db"
 	"github.com/abhishekshree/iitk-coin/routes"
@@ -69,5 +70,5 @@ func main() {
 	app.Post("/acceptRedeemRequest", routes.AcceptRedeemRequest)
 	app.Post("/rejectPendingRequests", routes.RejectPendingRequests)
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(os.Getenv("PORT")))
 }
