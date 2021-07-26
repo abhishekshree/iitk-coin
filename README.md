@@ -1,8 +1,55 @@
-# iitk-coin
+# IITK Coin
 
-Database Used: `SQLite`
+[![](https://img.shields.io/docker/cloud/build/abhishekshree/iitk-coin?style=flat-square)](https://hub.docker.com/r/abhishekshree/iitk-coin)
+[![Netlify](https://img.shields.io/netlify/3fccc76a-3ea3-4141-9cf2-e152c5f65be8?style=flat-square)](https://iitk-coin-docs.netlify.app/)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/abhishekshree/iitk-coin?style=flat-square)
+![GitHub repo size](https://img.shields.io/github/repo-size/abhishekshree/iitk-coin?style=flat-square)
 
-The database currently has two tables, they are:
+This repository contains the backend for IITK Coin, which is a centralized pseudo-coin system in golang (fiber) for use in IITK Campus.
+
+## <u>Index</u>
+
+- [Directory Structure](#directory-structure)
+- [Database](#database-sqlite)
+- [Details of the endpoints](#details-of-the-endpoints)
+
+---
+
+## <u>Directory Structure</u>
+<br />
+
+```
+├── config
+│   └── config.go
+├── db
+│   ├── admin.go
+│   ├── db.go
+│   ├── records.go
+│   ├── redeem.go
+│   └── transactions.go
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── iitk-coin
+├── main.go
+├── middleware
+│   ├── hash.go
+│   └── jwt.go
+├── README.md
+├── routes
+│   ├── redeem.go
+│   ├── routes.go
+│   └── transactions.go
+└── Users.db
+
+4 directories, 19 files
+```
+
+---
+
+## <u>Database: `SQLite`</u>
+The database currently has three tables, they are:
+<br />
 
 - User
 
@@ -45,7 +92,11 @@ CREATE TABLE RedeemRequests (
 -- for status: 0 -> Pending, 1 -> Redeemed, 2 -> Declined
 ```
 
-## Details of the endpoints:
+---
+
+## <u>Details of the endpoints:</u>
+Can also be viewed [here.](https://iitk-coin-docs.netlify.app/)
+<br />
 
 ### Signup
 
@@ -92,8 +143,6 @@ method : GET
 Response : "This is a very secret string."
 NOTE: Can access only after a successful JWT verification and if the user Exists.
 ```
-
----
 
 ### Get Coins
 
@@ -145,9 +194,8 @@ Response : {
 }
 Note: Check from JWT if the amount coming from user X is actually after when user X logs in.
 ```
----
 
-## Sidenote:
+### Sidenote:
 
 Also defined some functions to give or take admin privileges in the db package.
 
@@ -158,8 +206,6 @@ func RemoveAdmin(rollno string) bool
 func IsAdmin(rollno string) bool
 
 ```
-
-## Redeem Logic
 
 ### Get a list of Redeemable items and price
 
